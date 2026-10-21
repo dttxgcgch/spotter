@@ -230,6 +230,51 @@ p{margin:0}
 .pr b{font-weight:800}
 .toast{position:fixed;left:50%;bottom:150px;transform:translateX(-50%);background:var(--ink);color:#fff;padding:10px 16px;border-radius:12px;font-weight:700;font-size:14px;z-index:300;max-width:88vw;text-align:center;animation:up .2s}
 @media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+
+/* dashboard */
+.stat{background:var(--paper);border-radius:18px;padding:16px;margin-bottom:12px}
+.stat .sl{font-size:17px;font-weight:600}
+.stat .sl b{font-family:var(--disp);font-stretch:125%;font-weight:900;font-size:34px;line-height:1;display:inline;margin-right:4px}
+.stat .sl span{display:block;margin-top:4px;font-size:13px;color:var(--slate);font-weight:500}
+.strip{display:grid;grid-template-columns:repeat(7,1fr);gap:4px;margin-top:12px}
+.strip div{display:flex;flex-direction:column;align-items:center;gap:4px;font-size:11px;font-weight:700;color:var(--slate)}
+.strip i{width:26px;height:26px;border-radius:50%;border:2px solid var(--rule);display:block}
+.strip .on i{background:var(--signal);border-color:var(--signal)}
+.strip .td i{border-color:var(--ink)}.strip .td.on i{border-color:var(--signal);box-shadow:0 0 0 2px var(--paper),0 0 0 4px var(--ink)}
+.strip .td span{color:var(--ink)}
+.winl{display:flex;gap:10px;align-items:baseline;background:#E4F5EF;color:#0B6B50;border-radius:14px;padding:12px 14px;margin-bottom:12px;font-size:14px;line-height:1.35}
+.winl b{font-size:11px;text-transform:uppercase;letter-spacing:.06em;flex:none}
+.nx{background:var(--paper);border-radius:18px;padding:14px 16px 14px 18px;margin-bottom:10px;border-left:6px solid var(--cobalt)}
+.nx.big{padding:18px 18px 16px 20px;box-shadow:0 2px 0 var(--rule)}
+.nx.t-fix,.nx.t-persist{border-left-color:var(--alert)}.nx.t-skip,.nx.t-nocam{border-left-color:var(--warn)}.nx.t-away,.nx.t-steady,.nx.t-first{border-left-color:var(--signal)}
+.nxh{font-family:var(--disp);font-stretch:112%;font-weight:800;font-size:20px;line-height:1.15}
+.nx:not(.big) .nxh{font-size:16px}
+.nx p{margin:6px 0 12px;color:var(--slate);font-size:15px;line-height:1.4}
+.nx:not(.big) p{margin-bottom:10px;font-size:14px}
+.nxb{display:flex;align-items:center;gap:16px;flex-wrap:wrap}
+.legend{display:flex;gap:14px;font-size:12px;color:var(--slate);font-weight:600;margin-bottom:12px;flex-wrap:wrap}
+.legend span{display:flex;align-items:center;gap:6px}
+.dd{display:inline-block;width:10px;height:10px;position:relative;flex:none}
+.dc{border-radius:50%;background:var(--signal)}
+.dt{background:var(--warn);transform:rotate(45deg) scale(.85)}
+.dx::before,.dx::after{content:"";position:absolute;left:-1px;right:-1px;top:3.5px;height:2.5px;background:var(--alert);border-radius:2px}
+.dx::before{transform:rotate(45deg)}.dx::after{transform:rotate(-45deg)}
+.fx{padding:10px 0;border-top:1px solid var(--rule)}.fx:first-of-type{border-top:0;padding-top:0}
+.fxn{font-weight:800;font-size:15px;margin-bottom:6px}
+.fxr{display:grid;grid-template-columns:auto 1fr;gap:3px 10px;align-items:baseline;padding:6px 0}
+.fxm{grid-column:1/-1}.dg{display:inline-flex;gap:4px;margin:0 10px 4px 0}
+.more summary{cursor:pointer;color:var(--cobalt);font-weight:700;font-size:14px;padding:10px 0 4px}
+.dd{width:9px;height:9px}
+.fxd{font-size:12px;color:var(--slate);font-weight:600}
+.fxm{display:flex;flex-wrap:wrap}
+.fxc{font-size:12px;font-weight:700;color:var(--ink);white-space:nowrap;text-align:right}
+.bgap{font-size:12px;color:#9A6200;font-weight:700;margin:-2px 0 6px 76px}
+.wr{display:flex;align-items:center;gap:8px}
+.rdy{font-style:normal;font-size:12px;font-weight:800;color:var(--cobalt);background:#E7ECFF;border-radius:20px;padding:3px 9px}
+.takes{display:flex;flex-direction:column;gap:8px;margin:0 0 12px}
+.tk{display:flex;gap:10px;align-items:baseline;border-radius:14px;padding:12px 14px;font-size:14px;line-height:1.35;background:var(--paper);border-left:5px solid var(--rule)}
+.tk b{font-size:11px;text-transform:uppercase;letter-spacing:.06em;flex:none;min-width:52px}
+.tk.w{border-left-color:var(--signal)}.tk.w b{color:#0B6B50}.tk.f{border-left-color:var(--warn)}.tk.f b{color:#9A6200}
 </style>
 </head>
 <body>
@@ -538,7 +583,7 @@ function makeCounter(type){
             const f0=minor[0];
             const cue=score>=90?'Good rep':(f0?f0.msg:(pen>8?A.partial:'Nice, keep it controlled'));
             const short=f0?f0.short:(score<90&&pen>8?A.partialShort:'');
-            C.reps++;C.onRep&&C.onRep(score,cue,C.reps,short);
+            C.reps++;C.onRep&&C.onRep(score,cue,C.reps,short,f0?f0.id:(short?'range':''));
           }
         }
       }else{
@@ -550,6 +595,102 @@ function makeCounter(type){
   }
   return C;
 }
+
+// ===================== INSIGHTS: what the dashboard says =====================
+// Every number that decides what the dashboard says lives here, so it is easy to tune.
+const RULES={repeatMinReps:3,repeatShare:.3,minAttempts:5,persistSessions:3,skipDays:10,awayDays:7,heavierSessions:2,dismissDays:7,improveFactor:.5};
+// [what happened, how to fix it, noun used when it improves]
+const FIXTXT={
+  curl:{drift:['your elbow drifted','Keep it pinned to your side.','elbow drift'],range:['your curls stopped short','Curl all the way up.','short curls']},
+  squat:{fold:['your chest folded forward','Keep your chest up.','chest fold'],range:['your squats were shallow','Sit back and down until your thighs are level.','shallow squats']},
+  pushup:{hips:['your hips sagged or rose','Keep your body in one straight line.','hip sag'],range:['your push-ups stopped short','Lower your chest closer to the floor.','short push-ups']},
+  press:{range:['your presses stopped short','Press all the way overhead.','short presses']}
+};
+const INC=ex=>ex.eq==='gym'?2.5:1;
+const MSG_RANK={away:0,fix:1,persist:1,skip:2,heavier:3,nocam:4};
+function sessOf(H,id){const out=[];for(const h of H)for(const it of (h.items||[]))if(it.id===id)out.push({day:h.day,id,kg:it.kg||0,sets:it.sets||[]});return out.sort((a,b)=>a.day-b.day)}
+function formOf(sess){let total=0,clean=0;const counts={};
+  for(const st of sess.sets){const d=st.dots||'';total+=d.length;for(const ch of d)if(ch==='c')clean++;for(const k in (st.f||{}))counts[k]=(counts[k]||0)+st.f[k]}
+  return{total,clean,counts,has:total>0}}
+function topMistake(sess){const f=formOf(sess);if(f.total<RULES.minAttempts)return null;let best=null;
+  for(const k in f.counts){const c=f.counts[k];if(c>=RULES.repeatMinReps&&c/f.total>=RULES.repeatShare&&(!best||c>best.count))best={fid:k,count:c,total:f.total}}
+  return best}
+function analyze(Hraw,today,dismissed={}){
+  const H=[...Hraw].sort((a,b)=>a.day-b.day||(a.date||0)-(b.date||0));
+  const res={status:null,win:null,main:null,also:[],body:{},gap:{},forms:[],weights:[]};
+  const lastDay=H.length?H[H.length-1].day:null;
+  res.status={week:H.filter(h=>h.day>=today-6&&h.day<=today).length,last:lastDay==null?null:today-lastDay,
+    strip:[...Array(7)].map((_,i)=>{const d=today-6+i;return{d,on:H.some(h=>h.day===d),today:d===today,wd:new Date(d*864e5).getUTCDay()}})};
+  for(const k in TARGETS){res.body[k]=0;res.gap[k]=null}
+  for(const h of H)for(const it of h.items||[]){const ex=EX[it.id];if(!ex)continue;
+    if(h.day>=today-6&&h.day<=today)res.body[ex.t]+=(it.sets||[]).length;
+    const g=today-h.day;if(res.gap[ex.t]==null||g<res.gap[ex.t])res.gap[ex.t]=g}
+  const away=lastDay!=null&&today-lastDay>=RULES.awayDays;
+  const dis=k=>dismissed[k]!=null&&today-dismissed[k]<RULES.dismissDays;
+  const cands=[];const add=(type,key,o)=>{if(!dis(key))cands.push({type,key,ord:0,...o})};
+  const heavierOK=new Set();let win=null;
+  // form: repeated mistakes, persistent mistakes, wins, missing camera data
+  for(const ex of X){if(!ex.cam)continue;
+    const all=sessOf(H,ex.id),S=all.filter(x=>formOf(x).has);
+    if(!S.length){if(all.length)add('nocam','nocam:'+ex.id,{ord:-all[all.length-1].day,head:'Turn on the camera coach.',body:`${ex.n}. It counts your reps and checks your form.`,btn:'Try it now',a:{t:'practise',id:ex.id}});continue}
+    res.forms.push({id:ex.id,last:S[S.length-1].day,rows:S.slice(-2).map(x=>{const f=formOf(x);return{day:x.day,sets:x.sets.map(t=>t.dots||'').filter(Boolean),clean:f.clean,total:f.total}})});
+    const last=S[S.length-1],tm=topMistake(last),fx=tm&&(FIXTXT[ex.cam]||{})[tm.fid];
+    if(tm&&fx){
+      const rec=S.slice(-RULES.persistSessions);
+      const persistent=rec.length>=RULES.persistSessions&&rec.every(x=>{const t=topMistake(x);return t&&t.fid===tm.fid});
+      add(persistent?'persist':'fix',(persistent?'persist:':'fix:')+ex.id+':'+tm.fid,{ord:-(tm.count/tm.total),
+        head:persistent?`${cap(fx[0])} in your last ${RULES.persistSessions} workouts.`:`${cap(fx[0])} on ${tm.count} of ${tm.total} reps.`,
+        body:persistent?`${ex.n}. ${ex.eq!=='none'?'Try a lighter weight for a while.':'Try the easier version: '+ex.easy+'.'}`:`${ex.n}. ${fx[1]}`,
+        btn:'Practise now',a:{t:'practise',id:ex.id}});
+    }else if(S.length>=2&&!away){
+      const prev=S[S.length-2],pt=topMistake(prev),pf=pt&&(FIXTXT[ex.cam]||{})[pt.fid];
+      if(pf){const f=formOf(last),nowC=f.counts[pt.fid]||0;
+        if(nowC/f.total<=(pt.count/pt.total)*RULES.improveFactor&&(!win||last.day>=win.day))win={day:last.day,text:`${ex.n}: ${pf[2]} is down from ${pt.count} of ${pt.total} reps to ${nowC} of ${f.total}. Nice work.`}}
+    }
+  }
+  // skipped body area (only areas trained before)
+  if(!away){let worst=null;for(const k in TARGETS){const g=res.gap[k];if(g!=null&&g>=RULES.skipDays&&(!worst||g>worst.g))worst={k,g}}
+    if(worst)add('skip','skip:'+worst.k,{head:`No ${TARGETS[worst.k].n.toLowerCase()} work in ${worst.g} days.`,body:`Add a ${TARGETS[worst.k].n.toLowerCase()} exercise to keep your body balanced.`,btn:`Plan a ${TARGETS[worst.k].n.toLowerCase()} day`,a:{t:'plan',k:worst.k}})}
+  // ready for heavier weight
+  let hv=null;
+  for(const ex of X){if(ex.eq==='none')continue;const S=sessOf(H,ex.id);if(S.length<RULES.heavierSessions)continue;
+    const rec=S.slice(-RULES.heavierSessions),kg=rec[0].kg;
+    if(!(kg>0)||!rec.every(x=>x.kg===kg&&x.sets.length>=2&&x.sets.every(t=>t.reps>=t.tgt)))continue;
+    const last=S[S.length-1],lf=formOf(last);if(lf.has&&(topMistake(last)||lf.clean/lf.total<.8))continue;
+    heavierOK.add(ex.id);if(!hv||last.day>=hv.day)hv={day:last.day,ex,kg}}
+  if(hv&&!away)add('heavier','heavier:'+hv.ex.id,{head:`You finished every rep at ${hv.kg} kg ${RULES.heavierSessions===2?'twice':RULES.heavierSessions+' times'}.`,body:`${hv.ex.n}. Try ${hv.kg+INC(hv.ex)} kg next time.`,btn:'Add to my plan',a:{t:'add',id:hv.ex.id}});
+  if(away)add('away','away',{head:'Welcome back.',body:`It has been ${today-lastDay} days. Start with a short workout.`,btn:'Build a 20 min workout',a:{t:'away'}});
+  if(!away&&win)res.win=win.text;
+  // weights
+  for(const ex of X){if(ex.eq==='none')continue;const S=sessOf(H,ex.id).filter(x=>x.kg>0);if(!S.length)continue;
+    const l=S[S.length-1];res.weights.push({id:ex.id,kg:l.kg,first:S[0].kg,day:l.day,ready:heavierOK.has(ex.id)?l.kg+INC(ex):null})}
+  res.forms.sort((a,b)=>b.last-a.last);res.weights.sort((a,b)=>b.day-a.day);res.weights=res.weights.slice(0,4);
+  // choose
+  cands.sort((a,b)=>MSG_RANK[a.type]-MSG_RANK[b.type]||a.ord-b.ord);
+  if(!H.length)res.main={type:'first',head:'Build your first workout.',body:'Pick the body areas you want and the time you have.',btn:'Build a workout',a:{t:'build'}};
+  else if(cands.length)res.main=cands[0];
+  else res.main={type:'steady',head:"You're on track.",body:res.status.week?`${res.status.week} workout${res.status.week===1?'':'s'} this week. Rest, or train when you are ready.`:'Nothing to fix right now. Train when you are ready.',btn:'Build a workout',a:{t:'build'}};
+  res.also=away?[]:cands.slice(1,3);
+  return res;
+}
+const cap=t=>t.charAt(0).toUpperCase()+t.slice(1);
+// the short note on the Workout done screen: only about the workout just finished
+function todayTakeaway(rec,prevH){
+  const out={win:null,fix:null,hint:null};let best=null;const wins=[];
+  for(const it of rec.items||[]){const ex=EX[it.id];if(!ex||!ex.cam)continue;
+    const cur={day:rec.day,sets:it.sets||[]},f=formOf(cur);
+    if(!f.has){out.hint=out.hint||`${ex.n}: turn on the camera coach next time to check your form.`;continue}
+    const tm=topMistake(cur),fx=tm&&(FIXTXT[ex.cam]||{})[tm.fid];
+    if(tm&&fx){if(!best||tm.count/tm.total>best.share)best={share:tm.count/tm.total,text:`${ex.n}: ${fx[0]} on ${tm.count} of ${tm.total} reps. ${fx[1]}`}}
+    else{
+      const prev=sessOf(prevH,it.id).filter(x=>formOf(x).has).slice(-1)[0],pt=prev&&topMistake(prev),pf=pt&&(FIXTXT[ex.cam]||{})[pt.fid];
+      if(pf){const nowC=f.counts[pt.fid]||0;if(nowC/f.total<=(pt.count/pt.total)*RULES.improveFactor)wins.push(`${ex.n}: ${pf[2]} is down from ${pt.count} of ${pt.total} reps to ${nowC} of ${f.total}. Nice work.`)}
+      if(!wins.length&&f.total>=RULES.minAttempts&&f.clean/f.total>=.7)wins.push(`${ex.n}: ${f.clean} of ${f.total} reps were clean.`)}
+  }
+  out.win=wins[0]||null;out.fix=best?best.text:null;if(out.fix)out.hint=null;
+  if(!out.win&&!out.fix&&!out.hint)out.win=`${rec.sets} sets done in ${rec.min} min. Nice work.`;
+  return out;
+}
 /*PURE-END*/
 
 // ===================== STATE & STORAGE =====================
@@ -559,7 +700,7 @@ const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;',
 const fmt=s=>{s=Math.max(0,Math.round(s));return Math.floor(s/60)+':'+String(s%60).padStart(2,'0')};
 const dayNum=(d=new Date())=>Math.floor((d.getTime()-d.getTimezoneOffset()*60000)/86400000);
 const LS='spotter.v1';
-let DB={history:[],lastW:{},prefs:{voice:true,facing:'user',cam:true}};
+let DB={history:[],lastW:{},dismissed:{},prefs:{voice:true,facing:'user',cam:true}};
 try{const r=JSON.parse(localStorage.getItem(LS)||'null');if(r)DB={...DB,...r,prefs:{...DB.prefs,...(r.prefs||{})}}}catch(e){}
 const save=()=>{try{localStorage.setItem(LS,JSON.stringify(DB))}catch(e){}};
 let WL=null;
@@ -887,7 +1028,7 @@ function vIntro(s){
 }
 function vSet(s){
   const it=s.items[s.idx],ex=EX[it.id],tg=tgtOf(ex,it.c),useCam=ex.cam&&s.useCam,sec=ex.unit==='sec';
-  s.cur={reps:0,scores:[],tg,held:0,running:false};
+  s.cur={reps:0,scores:[],tg,held:0,running:false,dots:'',f:{},cam:!!useCam};
   s.mount=()=>setMount(s,it,ex,tg,useCam,sec);
   const stage=useCam?`<div class="stage" id="stage"><canvas id="cv" width="640" height="480"></canvas><div class="msg" id="stmsg"><div>Loading the pose coach...</div><div class="small" style="font-weight:500;opacity:.8">This takes a few seconds the first time.</div></div></div>`:`<div class="stage demo-stage"><div class="anim" data-ex="${ex.id}"></div></div>`;
   return`<div class="muted small" style="font-weight:700">${esc(ex.n)}, set ${it.sets.length+1} of ${it.c.s}${it.w?' at '+it.w+' kg':''}</div>
@@ -915,8 +1056,8 @@ async function setMount(s,it,ex,tg,useCam,sec){
     const phrase=(n,short)=>{if(!short){lastShort='';streak=0;return String(n)}
       if(short===lastShort)streak++;else{lastShort=short;streak=1}
       return(streak===1||streak%3===0)?n+'. '+short:String(n)};
-    C.onRep=(score,msg,n,short)=>{s.cur.reps=n;s.cur.scores.push(score);const r=$('#repNum');if(r)r.textContent=n;cue(msg,short||score<75?1:0);say(n>=tg?'Set complete':phrase(n,short));beep(900,.06);if(n>=tg)setTimeout(finishSet,900)};
-    C.onBad=f=>{s.cur.skip=(s.cur.skip||0)+1;cue('Not counted: '+f.msg.charAt(0).toLowerCase()+f.msg.slice(1),2);say('Not counted. '+f.short);beep(300,.28);lastShort=''};
+    C.onRep=(score,msg,n,short,fid)=>{s.cur.dots+=(short||score<75?'t':'c');if(fid)s.cur.f[fid]=(s.cur.f[fid]||0)+1;s.cur.reps=n;s.cur.scores.push(score);const r=$('#repNum');if(r)r.textContent=n;cue(msg,short||score<75?1:0);say(n>=tg?'Set complete':phrase(n,short));beep(900,.06);if(n>=tg)setTimeout(finishSet,900)};
+    C.onBad=f=>{s.cur.dots+='x';s.cur.f[f.id]=(s.cur.f[f.id]||0)+1;s.cur.skip=(s.cur.skip||0)+1;cue('Not counted: '+f.msg.charAt(0).toLowerCase()+f.msg.slice(1),2);say('Not counted. '+f.short);beep(300,.28);lastShort=''};
     C.onLive=f=>cue(f.msg,f.major?2:1);
     C.onCue=(m,short)=>{cue(m,1);say(short||m)};
     Cam.need=(ex.cam==='squat'||ex.cam==='pushup')?'Step back until your whole body is in view':'Move until your shoulder, elbow and wrist are in view';
@@ -928,7 +1069,7 @@ async function setMount(s,it,ex,tg,useCam,sec){
     s.useCam=false;camClose();
     const nm=e&&e.name||'',ms=e&&e.message||'';
     toast(nm==='NotAllowedError'?'Camera permission was blocked. Counting manually instead.':nm==='NotFoundError'?'No camera found. Counting manually instead.':ms.startsWith('Camera is not available')?ms:'The pose coach could not load. Check your internet. Counting manually instead.');
-    if(S.session===s&&s.phase==='set'){const st=s.cur;sRender();s.cur=st}
+    if(S.session===s&&s.phase==='set'){const st=s.cur;st.cam=false;sRender();s.cur=st}
   }
 }
 function repDone(n){
@@ -942,8 +1083,8 @@ function finishSet(){
   const it=s.items[s.idx],ex=EX[it.id],tg=tgtOf(ex,it.c);
   clearInterval(s.hold);recStop();camDetach();
   const reps=s.cur.reps;
-  if(reps>0||s.cur.scores.length)it.sets.push({reps,tgt:tg,scores:s.cur.scores,skip:s.cur.skip||0});
-  else it.sets.push({reps:0,tgt:tg,scores:[],skip:s.cur.skip||0});
+  if(reps>0||s.cur.scores.length)it.sets.push({reps,tgt:tg,scores:s.cur.scores,skip:s.cur.skip||0,dots:s.cur.dots||'',f:s.cur.f||{},cam:s.cur.cam?1:0});
+  else it.sets.push({reps:0,tgt:tg,scores:[],skip:s.cur.skip||0,dots:s.cur.dots||'',f:s.cur.f||{},cam:s.cur.cam?1:0});
   const more=it.sets.length<it.c.s;
   if(more){s.next={phase:'set'};toRest(s,it.c.rest)}
   else if(s.idx<s.items.length-1){camClose();s.next={phase:'intro',idx:s.idx+1};toRest(s,Math.max(it.c.rest,45))}
@@ -972,11 +1113,12 @@ function toSummary(){const s=S.session;clearInterval(s.tm);camClose();s.phase='s
   const all=done.flatMap(i=>i.sets.flatMap(x=>x.scores));
   const reps=done.reduce((a,i)=>a+i.sets.reduce((b,x)=>b+x.reps,0),0),sets=done.reduce((a,i)=>a+i.sets.length,0);
   const vol=Math.round(done.reduce((a,i)=>a+i.sets.reduce((b,x)=>b+x.reps*i.w,0),0));
-  const form=all.length?Math.round(all.reduce((a,b)=>a+b,0)/all.length):null;
   const skip=s.items.reduce((a,i)=>a+i.sets.reduce((b,x)=>b+(x.skip||0),0),0);
+  const form=all.length+skip?Math.round(all.reduce((a,b)=>a+b,0)/(all.length+skip)):null; // a rep that was not counted scores 0
   const xp=sets*10+(sets?50:0)+(form!=null&&form>=85?25:0);
   s.rec_={id:Date.now(),date:Date.now(),day:dayNum(),min:Math.max(1,Math.round((Date.now()-s.t0)/60000)),planned:s.planned,
-    items:done.map(i=>({id:i.id,kg:i.w,sets:i.sets.map(x=>({reps:x.reps,tgt:x.tgt}))})),reps,sets,vol,form,xp,skip};
+    items:done.map(i=>({id:i.id,kg:i.w,sets:i.sets.map(x=>({reps:x.reps,tgt:x.tgt,dots:x.dots||'',f:x.f||{}}))})),reps,sets,vol,form,xp,skip};
+  s.take=sets?todayTakeaway(s.rec_,DB.history.filter(h=>!h.demo)):null;
   if(sets){const before=earned();DB.history.push(s.rec_);done.forEach(i=>{if(i.w)DB.lastW[i.id]={kg:i.w,full:i.sets.length>=i.c.s&&i.sets.every(x=>x.reps>=x.tgt)}});save();const after=earned();s.newB=BADGES.filter(b=>after.has(b.id)&&!before.has(b.id))}
   sRender();renderChip();
 }
@@ -985,6 +1127,7 @@ function vSum(s){
   if(!r.sets)return`<h1>No sets logged</h1><p class="muted">Nothing to save this time. Finish at least one set to log a workout.</p><button class="btn block" style="margin-top:14px" data-act="closeSession">Back to plan</button>`;
   return`<h1>Workout done</h1><p class="muted">You earned ${r.xp} XP.</p>
   <div class="sum"><div><b>${r.min}</b><span>minutes</span></div><div><b>${r.sets}</b><span>sets</span></div><div><b>${r.reps}</b><span>total reps</span></div><div><b>${r.form!=null?r.form+'%':'n/a'}</b><span>${r.form!=null?'average form score':'no camera sets'}</span></div></div>
+  ${takeHTML(s.take)}
   ${r.skip?`<p class="muted small" style="margin:-4px 2px 10px">${r.skip} rep${r.skip>1?'s were':' was'} not counted because of form.</p>`:''}
   ${(s.newB||[]).map(b=>`<div class="badge-new"><div class="ic">${b.ic}</div><div><b>New badge: ${b.n}</b></div></div>`).join('')}
   ${s.clips.length?`<h2 style="margin:16px 0 8px">Your recordings</h2>${s.clips.map(c=>`<div class="clip"><b class="small">${esc(c.name)}</b><video src="${c.url}" controls playsinline></video><a class="link small" href="${c.url}" download="${esc(c.name.replace(/[^a-z0-9]+/gi,'-'))}.${c.ext}">Download</a></div>`).join('')}<p class="muted small">Recordings stay on this device until you close the page. Download any you want to keep.</p>`:''}
@@ -996,35 +1139,52 @@ function closeSession(){wakeOff();const s=S.session;if(s){clearInterval(s.tm);cl
 function seedDemo(){
   DB.history=DB.history.filter(h=>!h.demo);const today=dayNum(),offs=[27,25,22,20,17,15,12,10,7,5,3,1];
   const plans=[['squat','pushup','curl','ohpress','plank'],['dbrow','pulldown','cablerow','hammer','crunch'],['goblet','rdl','dbbench','frontraise','legraise']];
-  offs.forEach((o,k)=>{const ids=plans[k%3];const items=ids.map(id=>({id,kg:EX[id].kg?EX[id].kg+Math.floor(k/4):0,sets:[1,2,3].map(()=>({reps:EX[id].unit==='sec'?30:(k<4?10:12),tgt:EX[id].unit==='sec'?30:12}))}));
+  const FID={curl:'drift',squat:'fold',pushup:'hips',press:'range'},BAD=[[5,5,4],[5,4,4],[6,5,5],[1,1,0]],occ={};
+  offs.forEach((o,k)=>{const ids=plans[k%3];const items=ids.map(id=>{const e=EX[id],tg=e.unit==='sec'?30:12,cam=e.cam&&k%3!==1;
+    const n=occ[id]=(occ[id]==null?0:occ[id]+1),bad=BAD[Math.min(n,3)];
+    return{id,kg:e.kg?e.kg+Math.floor(k/4):0,sets:[0,1,2].map(j=>{const reps=e.unit==='sec'?30:(k<4?10:12);let d='',f={};
+      if(cam){const b=Math.min(bad[j],reps);d='t'.repeat(b)+'c'.repeat(reps-b);if(b)f[FID[e.cam]]=b}
+      return{reps,tgt:tg,dots:d,f}})}});
     const reps=items.reduce((a,i)=>a+i.sets.reduce((b,x)=>b+x.reps,0),0),form=Math.min(95,66+k*2+(k%3));const xp=15*10+50+(form>=85?25:0);
     DB.history.push({id:900000+k,demo:true,date:Date.now()-o*864e5,day:today-o,min:32+(k%4)*4,planned:35,items,reps,sets:15,vol:Math.round(items.reduce((a,i)=>a+i.sets.reduce((b,x)=>b+x.reps*i.kg,0),0)),form:k%3===1?null:form,xp})});
-  save();
+  DB.dismissed={};save();
 }
+let DASH=[];
+const ago=g=>g<=0?'Today':g===1?'Yesterday':g+' days ago';
+function takeHTML(t){if(!t)return'';
+  const row=(c,l,x)=>`<div class="tk ${c}"><b>${l}</b><span>${esc(x)}</span></div>`;
+  return`<div class="takes">${t.win?row('w','Good',t.win):''}${t.fix?row('f','Work on',t.fix):''}${t.hint?row('h','Tip',t.hint):''}</div>`}
+const dotsHTML=sets=>sets.map(d=>`<span class="dg">${[...d].map(c=>`<i class="dd d${c}"></i>`).join('')}</span>`).join('');
+const fxBlock=f=>`<div class="fx"><div class="fxn">${esc(EX[f.id].n)}</div>${f.rows.map(r=>`<div class="fxr"><span class="fxd">${ago(today_()-r.day)}</span><span class="fxc">${r.clean} of ${r.total} clean</span><span class="fxm">${dotsHTML(r.sets)}</span></div>`).join('')}</div>`;
+const today_=()=>dayNum();
 function renderProgress(){
-  const H=DB.history,xp=totalXP(),L=levelOf(xp),st=streakInfo(),today=dayNum(),er=earned();
-  if(!H.length){$('#view').innerHTML=`<div class="hero"><h1>Your progress</h1><p>Finish a workout and your stats, streak and badges show up here.</p></div>
-    <div class="card"><div class="empty" style="border:0">No workouts yet.</div><div class="two" style="margin-top:8px"><button class="btn" data-act="tab" data-v="build">Build a workout</button><button class="btn ghost" data-act="seed">Preview with sample data</button></div></div>`;return}
-  const days=[...Array(7)].map((_,i)=>{const d=today-6+i;const m=H.filter(h=>h.day===d).reduce((a,h)=>a+h.min,0);return{d,m,l:['Su','Mo','Tu','We','Th','Fr','Sa'][new Date((d*86400000)+new Date().getTimezoneOffset()*60000).getDay()]}});
-  const mx=Math.max(30,...days.map(d=>d.m));
-  const bal={};Object.keys(TARGETS).forEach(k=>bal[k]=0);H.filter(h=>h.day>=today-6).forEach(h=>h.items.forEach(i=>{const t=EX[i.id]&&EX[i.id].t;if(t)bal[t]+=i.sets.length}));
-  const bm=Math.max(6,...Object.values(bal));
-  const fh=H.filter(h=>h.form!=null).slice(-10);
-  let trend='<p class="muted small">Do a camera set to see your form score over time.</p>';
-  if(fh.length>=2){const w=300,h=90,pts=fh.map((x,i)=>[8+i*(w-16)/(fh.length-1),h-8-(x.form-40)/60*(h-16)]);
-    trend=`<svg viewBox="0 0 ${w} ${h}" style="width:100%"><polyline points="${pts.map(p=>p.join(',')).join(' ')}" fill="none" stroke="#2B4EFF" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>${pts.map(p=>`<circle cx="${p[0]}" cy="${p[1]}" r="4" fill="#2B4EFF"/>`).join('')}</svg><div style="display:flex;justify-content:space-between" class="small muted"><span>${fh[0].form}%</span><b style="color:var(--ink)">${fh[fh.length-1].form}% latest</b></div>`}
-  const best={};H.forEach(h=>h.items.forEach(i=>{if(i.kg&&(!best[i.id]||i.kg>best[i.id].kg))best[i.id]={kg:i.kg,reps:Math.max(...i.sets.map(s=>s.reps))}}));
-  const prs=Object.entries(best).sort((a,b)=>b[1].kg-a[1].kg).slice(0,4);
-  const reps=H.reduce((a,h)=>a+h.reps,0);
+  const H=DB.history,today=dayNum(),xp=totalXP(),L=levelOf(xp),st=streakInfo(),er=earned();
+  if(!H.length){$('#view').innerHTML=`<div class="hero"><h1>Your progress</h1><p>Finish a workout and this page tells you what is going well and what to do next.</p></div>
+    <div class="card"><div class="empty" style="border:0">No workouts yet.</div><div class="two" style="margin-top:8px"><button class="btn" data-act="tab" data-v="build">Build a workout</button><button class="btn ghost" data-act="seed">Preview with sample data</button></div></div>`;$('#dockHost').innerHTML='';return}
+  const R=analyze(H,today,DB.dismissed||{});DASH=[R.main,...R.also];
+  const w=R.status.week,lastTxt=R.status.last==null?'':R.status.last===0?'Last workout: today':R.status.last===1?'Last workout: yesterday':`Last workout: ${R.status.last} days ago`;
+  const DN=['Su','Mo','Tu','We','Th','Fr','Sa'];
+  const mainCard=(c,i,big)=>{const dis=!['first','steady'].includes(c.type);
+    return`<div class="nx ${big?'big':''} t-${c.type}"><div class="nxh">${esc(c.head)}</div><p>${esc(c.body)}</p><div class="nxb"><button class="btn" data-act="dgo" data-i="${i}">${esc(c.btn)}</button>${dis&&c.key?`<button class="link small" data-act="ddis" data-k="${esc(c.key)}">Not now</button>`:''}</div></div>`};
+  const formBlock=R.forms.length?`<div class="card"><h3>Your form</h3><p class="muted small" style="margin:-4px 0 10px">Each mark is one rep, newest workout last.</p>
+    <div class="legend"><span><i class="dd dc"></i>Clean</span><span><i class="dd dt"></i>Tip given</span><span><i class="dd dx"></i>Not counted</span></div>
+    ${R.forms.slice(0,3).map(fxBlock).join('')}${R.forms.length>3?`<details class="more"><summary>Show ${R.forms.length-3} more exercise${R.forms.length-3>1?'s':''}</summary>${R.forms.slice(3).map(fxBlock).join('')}</details>`:''}</div>`:'';
+  const mxB=Math.max(6,...Object.values(R.body));
+  const bodyBlock=`<div class="card"><h3>Body balance</h3><p class="muted small" style="margin:-4px 0 10px">Sets in the last 7 days.</p>${Object.entries(TARGETS).map(([k,v])=>{const g=R.gap[k],stale=g!=null&&g>=RULES.skipDays;
+    return`<div class="brow"><span>${v.n}</span><div class="tr"><i style="width:${R.body[k]/mxB*100}%;background:${v.c}"></i></div><em>${R.body[k]}</em></div>${stale?`<div class="bgap">Last trained ${g} days ago</div>`:''}`}).join('')}</div>`;
+  const wBlock=R.weights.length?`<div class="card"><h3>Your weights</h3>${R.weights.map(x=>`<div class="pr"><span>${esc(EX[x.id].n)}</span><span class="wr">${x.ready?`<em class="rdy">Ready for ${x.ready} kg</em>`:''}<b>${x.kg} kg</b></span></div>`).join('')}</div>`:'';
   $('#view').innerHTML=`<div class="hero"><h1>Your progress</h1></div>
-  <div class="hero2">${sprout(L.lvl)}<div style="flex:1"><div style="font-family:var(--disp);font-stretch:112%;font-weight:800;font-size:24px">Level ${L.lvl}</div><div class="small" style="opacity:.75">${L.need-L.into} XP to level ${L.lvl+1}. Your plant grows as you do.</div><div class="bar"><b style="width:${L.into/L.need*100}%"></b></div></div></div>
-  <div class="stats"><div><b>${st.n}</b><span>${st.alive?'workout streak':'streak (restart today)'}</span></div><div><b>${H.length}</b><span>workouts</span></div><div><b>${reps}</b><span>total reps</span></div></div>
-  <p class="muted small" style="margin:-4px 2px 12px">One rest day between workouts keeps your streak alive.</p>
-  <div class="card"><h3>This week</h3><div class="wk">${days.map(d=>`<div><i class="${d.m?'':'z'}" style="height:${d.m?Math.max(8,d.m/mx*100):4}%"></i><span>${d.l}</span></div>`).join('')}</div></div>
-  <div class="card"><h3>Muscle balance, sets this week</h3>${Object.entries(TARGETS).map(([k,v])=>`<div class="brow"><span>${v.n}</span><div class="tr"><i style="width:${bal[k]/bm*100}%;background:${v.c}"></i></div><em>${bal[k]}</em></div>`).join('')}</div>
-  <div class="card"><h3>Form score trend</h3>${trend}</div>
-  <div class="card"><h3>Heaviest lifts</h3>${prs.length?prs.map(([id,b])=>`<div class="pr"><span>${esc(EX[id].n)}</span><b>${b.kg} kg</b></div>`).join(''):'<p class="muted small">Log a weighted exercise to see your records.</p>'}</div>
-  <div class="card"><h3>Badges</h3><div class="badges">${BADGES.map(b=>`<div class="bdg ${er.has(b.id)?'':'lock'}"><span class="ic">${b.ic}</span>${b.n}</div>`).join('')}</div></div>
+  <div class="stat"><div class="sl"><div><b>${w}</b> workout${w===1?'':'s'} this week</div><span>${lastTxt}</span></div>
+    <div class="strip">${R.status.strip.map(d=>`<div class="${d.on?'on':''} ${d.today?'td':''}"><i></i><span>${DN[d.wd]}</span></div>`).join('')}</div>
+    <p class="muted small" style="margin:8px 0 0">Aim for about 3 workouts a week, with a rest day in between.</p></div>
+  ${R.win?`<div class="winl"><b>Progress</b><span>${esc(R.win)}</span></div>`:''}
+  ${mainCard(R.main,0,true)}
+  ${R.also.map((c,i)=>mainCard(c,i+1,false)).join('')}
+  ${formBlock}${bodyBlock}${wBlock}
+  <div class="card"><h3>Rewards</h3>
+    <div class="hero2" style="margin:0 0 10px">${sprout(L.lvl)}<div style="flex:1"><div style="font-family:var(--disp);font-stretch:112%;font-weight:800;font-size:24px">Level ${L.lvl}</div><div class="small" style="opacity:.75">${L.need-L.into} XP to level ${L.lvl+1}. Your plant grows as you do.</div><div class="bar"><b style="width:${L.into/L.need*100}%"></b></div></div></div>
+    <div class="stats" style="margin-bottom:10px"><div><b>${st.n}</b><span>${st.alive?'workout streak':'streak (restart today)'}</span></div><div><b>${H.length}</b><span>workouts</span></div><div><b>${H.reduce((a,h)=>a+h.reps,0)}</b><span>total reps</span></div></div>
+    <div class="badges">${BADGES.map(b=>`<div class="bdg ${er.has(b.id)?'':'lock'}"><span class="ic">${b.ic}</span>${b.n}</div>`).join('')}</div></div>
   <p style="text-align:center;margin:18px 0">${H.some(h=>h.demo)?'<button class="link" data-act="clearDemo">Remove sample data</button>':'<button class="link" data-act="seed">Add sample data to preview</button>'}</p>`;
   $('#dockHost').innerHTML='';
 }
@@ -1049,6 +1209,13 @@ const ACT={
   preview:b=>openSheet(b.dataset.id),
   closeSheet,noop:()=>{},
   seed:()=>{seedDemo();render()},
+  ddis:b=>{DB.dismissed=DB.dismissed||{};DB.dismissed[b.dataset.k]=dayNum();save();render()},
+  dgo:b=>{const c=DASH[+b.dataset.i];if(!c)return;const a=c.a||{};
+    if(a.t==='practise'){startQuick(a.id);return}
+    if(a.t==='plan'){S.targets=new Set([a.k]);autoBuild();S.tab='build';render();scrollTo(0,0);toast('Workout built for '+TARGETS[a.k].n.toLowerCase());return}
+    if(a.t==='add'){if(!S.plan.includes(a.id))S.plan.push(a.id);S.tab='build';render();scrollTo(0,0);toast(EX[a.id].n+' added to your plan');return}
+    if(a.t==='away'){S.minutes=20;S.targets=new Set();autoBuild();S.tab='build';render();scrollTo(0,0);toast('A 20 minute workout is ready');return}
+    S.tab='build';render();scrollTo(0,0)},
   clearDemo:()=>{DB.history=DB.history.filter(h=>!h.demo);save();render()},
   endSession:()=>{const s=S.session,any=s.items.some(i=>i.sets.some(x=>x.reps>0));if(s.phase==='sum'){closeSession();return}
     if(confirm(any?'End this workout? Your finished sets will be saved.':'Leave this workout?')){if(any)toSummary();else closeSession()}},
